@@ -1,0 +1,7 @@
+node_modules
+.env
+images/post/*
+!images/post/.gitkeep
+images/profil/*
+!images/profil/.gitkeep
+.DS_Store

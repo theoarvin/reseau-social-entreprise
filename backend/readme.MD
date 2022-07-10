@@ -23,10 +23,10 @@ la route GET pour afficher un utilisateur
 http://localhost:3000/api/user/:id
 
 la route PUT pour désactiver un utilisateur
-http://localhost:3000/api/user/:id
+http://localhost:3000/api/user/disable/:id
 
 la route PUT pour mettre un utilisateur en admin
-http://localhost:3000/api/user/:id/admin
+http://localhost:3000/api/user/admin/:id
 
 ******\******* POST ********\*********
 

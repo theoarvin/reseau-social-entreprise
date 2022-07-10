@@ -18,10 +18,14 @@ exports.readOnePost = (req, res, next) => {
   };
 
 exports.createPost = async (req,res) => {
+  const postObject = req.file ?
+  {
+    ...JSON.parse(req.body.post),
+    pictureUrl: `${req.protocol}://${req.get('host')}/images/post/${req.file.filename}` ,
+  } : { ...(req.body.post) };
+    console.log(postObject);
     const newPost = new PostModel({
-        titre: req.body.titre,
-        message: req.body.message
-        
+      ...postObject
     });
 
     try {
@@ -34,43 +38,26 @@ exports.createPost = async (req,res) => {
 
 // controller pour modifier une sauce
 exports.updatePost = (req,res) => {
+  const postObject = req.file ?
+  {
+    ...JSON.parse(req.body.post),
+    pictureUrl: `${req.protocol}://${req.get('host')}/images/post/${req.file.filename}` ,
+  } : { ...req.body.post };
 
-    if(req.file){
-        PostModel.findOne({_id : req.params.id})
-      .then((objet) => {
-          // récupération du nom de la photo à supprimer dans la base de données
-          const filename = objet.imageUrl.split("/images")[1] ;
-          console.log(filename);
-          //suppression de l'image dans le dossier images
-          fs.unlink(`images/${filename}`, (error) => {
-              if(error) throw error;
-          })
-      })
-      .catch(error => res.status(400).json({ error })); 
-    }else{
-      console.log(false);
+  PostModel.findOne({_id : req.params.id})
+  .then((objet) => {
+    if(req.file) {
+      const filename = objet.pictureUrl.split('/images/post/')[1]
+      fs.unlink(`images/post/${filename}`, () => {});
     }
-    
-    // l'objet qui va être mis à jour dans la base de données
-    // deux cas possible
-    const postObject = req.file ? 
-    {
-      ...JSON.parse(req.body.post),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : 
-    {
-      ...req.body
-  
-    }
-  
-    // modifications qui seront envoyé dans la base de données
-    PostModel.updateOne({ _id : req.params.id }, {...postObject , _id : req.params.id})
-        .then(() => res.status(200).json({ 
-          message: "objet modifié"
-        
-        }))
-        .catch(error => res.status(400).json({ error }));
-  };
+
+    PostModel.updateOne({ _id: req.params.id }, { ...postObject, _id: req.params.id })
+    .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
+    .catch(error => res.status(400).json({ error }))
+  })
+  .catch(error => res.status(400).json({ error })); 
+};
+
 
 
 exports.deletePost = (req,res) => {
@@ -86,7 +73,19 @@ exports.deletePost = (req,res) => {
     )
 
 }
+/* exports.deleteSauce = (req, res, next) => {
+    Sauce.findOne({ _id: req.params.id })
+    .then(sauce => {
+        const filename = sauce.imageUrl.split('/images/')[1]
 
+        fs.unlink(images/${filename}, () => {
+            Sauce.deleteOne({ _id: req.params.id })
+                .then(() => res.status(200).json({ message: 'Sauce supprimée !' }))
+                .catch(error => res.status(400).json({ error: error }))
+        })
+    })
+    .catch(error => res.status(500).json({ error }))
+};*/
 
 // controller pour gérer les likes
 exports.likePost = (req, res, next) => {
@@ -125,4 +124,4 @@ exports.likePost = (req, res, next) => {
     })
     .catch((error) => res.status(500).json({error}))
    }
-  
+   

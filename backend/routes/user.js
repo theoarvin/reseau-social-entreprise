@@ -17,12 +17,10 @@ const auth = require ('../middleware/auth');
 router.post('/signup',controleEmail,password, authCtrl.signup);
 router.post('/login',apiLimiter, authCtrl.login);
 
-//router.get('/logout', authCtrl.logout)
-
 // user
 router.get('/',userCtrl.getAllUsers);
 router.get('/:id',userCtrl.userInfo);
-router.put('/:id',auth,userCtrl.desactivateUser);
-router.put('/:id/admin',userCtrl.adminUser)
+router.put('/disable/:id',auth,userCtrl.desactivateUser);
+router.put('/admin/:id',userCtrl.adminUser)
 
 module.exports = router;
